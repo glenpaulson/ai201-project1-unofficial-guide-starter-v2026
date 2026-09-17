@@ -1,6 +1,6 @@
 # The Unofficial Guide
 
-<!-- Replace this line with your name and which corpus you picked. -->
+Glen Vadakkoott - campus_life
 
 > **This file is your submission.** Fill it in as you go — most sections get
 > written during the milestone that produces them, not at the end.
@@ -21,11 +21,23 @@
 
 ## What This Does
 
-<!-- Three or four sentences. Which corpus you picked, and the kinds of
-     questions your system answers. Write it for someone who has never seen
-     this repo.
+Corpus I picked: 
+     campus_life
 
-     Milestone 5. -->
+Questions that I asked the system: 
+     "is the housing lottery random?"
+
+Answer returned by the system:
+
+     python app.py ask "is the housing lottery random?"
+     (best distance 0.254, cutoff 0.6)
+
+     The housing lottery is not entirely random in the way most people assume. Rising sophomores receive a randomly drawn number, but juniors and seniors are ordered first by accumulated credit hours, with random tie-breaking used only when necessary. 
+
+     Source: admin_housing_lottery.txt
+
+     Sources retrieved: admin_housing_lottery.txt, admin_parking_permits.txt, advising_registration.txt, housing_morrow_house.txt, housing_tamsin_court.txt
+
 
 ## Chunking Strategy
 
