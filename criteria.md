@@ -23,8 +23,9 @@ For at least 4 of my 5 test questions, the retrieved chunks include one that
 contains the answer.
 
 **Why this target:**
-<!-- e.g. "One of my questions is about a topic only two documents mention, so
-     I expect that one to be hard." -->
+Most of my questions have one clear document with the answer. But the Morrow
+House dryer question could get mixed up with the other laundry posts, which
+all look the same, so I think one question might miss.
 
 ---
 
@@ -33,8 +34,9 @@ contains the answer.
 Every answer the system produces names at least one source document.
 
 **Why this target:**
-<!-- Why all five and not four? What about your setup makes that achievable —
-     or what would have to go wrong for it not to be? -->
+The prompt tells the model to name the file it used, and every chunk comes with
+its filename. So there's no good reason for an answer to leave out the source,
+and I want all of them to have one.
 
 ---
 
@@ -50,8 +52,9 @@ in at least 4 of 5 tries.
      just keep five of them, or the "4 of 5" above has nothing to be 4 of. -->
 
 **Why this target:**
-<!-- What did your distances look like when you set the cutoff in Milestone 4?
-     Was there a clean gap, or did the two groups overlap? -->
+Most of the out-of-scope questions (Mongolia, the World Cup, Rust) have nothing
+to do with campus life. The ibuprofen question is a bit close to the health
+centre post, so it might slip through. That's why it's 4 of 5 and not 5 of 5.
 
 ---
 
@@ -69,15 +72,19 @@ in at least 4 of 5 tries.
        - "No chunk is shorter than 200 characters, since anything below that
           in my corpus turned out to be a heading with no content under it." -->
 
-
+When I print 5 sample chunks with `python app.py chunks`, at least 4 of them
+include both the name of what they're about (like "Morrow House" or "pass/fail")
+and at least one real fact about it (like a price, time, or deadline).
 
 **Why this target:**
-
-
+My posts are short and the name is usually only in the title line. If the
+chunks are too small, the title ends up in one chunk and the facts in another,
+and then a chunk like "$1.25 dry" doesn't say which building it's for. I allow
+one miss because some of the longer housing posts might split awkwardly.
 
 ---
 
-## 5. Your choice
+## 5. Answers get the right fact
 
 <!-- YOU WRITE THIS ONE TOO.
 
@@ -87,11 +94,15 @@ in at least 4 of 5 tries.
      present — anything, as long as it names a number or an observable
      outcome. -->
 
-
+For at least 4 of my 5 test questions, the answer includes the exact
+`expects` phrase from `questions.py` (for example, "$1.25" for the Morrow
+House dryer question).
 
 **Why this target:**
-
-
+My questions all have one clear right answer, like a price or a week number,
+so it's easy to check if the answer got it right. I allow one miss because a
+few documents look almost the same (the laundry posts, the drop vs. withdrawal
+deadlines), and the model might pick the wrong one.
 
 ---
 
