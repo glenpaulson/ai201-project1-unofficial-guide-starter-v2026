@@ -80,24 +80,72 @@ def fallback_split(
     return chunks
 
 
+# Keep adding paragraphs to a chunk until its body reaches this many
+# characters. Stops one-line paragraphs like "The good: closest building to the
+# science quad" from becoming chunks on their own.
+#
+# I started at 200 and it was too high: a whole housing post came back as one
+# chunk again, which is what I was trying to get away from. At 100 the laundry
+# line gets its own chunk with the building name on it.
+MIN_BODY = 100
+
+
 def split_documents(documents: list[Document]) -> list[Chunk]:
     """
-    Split documents into chunks. ⚠️ REPLACE THE BODY OF THIS IN MILESTONE 3.
+    Split on paragraphs, and repeat the title line in every chunk.
 
-    Right now it just calls the fallback. That is the plain, generic behaviour
-    the brief is talking about.
+    Every post in campus_life is a title line, a blank line, then one to four
+    short paragraphs. The title is the only place the name appears: the body of
+    housing_morrow_house.txt says "$1.50 wash, $1.25 dry" but never says
+    "Morrow House". A chunk without the title can't answer "how much is the
+    dryer in Morrow House", so the title goes on the front of each chunk.
 
-    When you write your own strategy, set `produced_by` to
-    "chunker.py::split_documents" so your README's Sample Chunks section names
-    the right function. `app.py chunks` prints that string for you.
-
-    Things worth thinking about before you write any code:
-      - Are your documents short posts or long guides?
-      - Is the useful information in one sentence, or spread over a paragraph?
-      - Would splitting on paragraph breaks keep more thoughts intact than
-        splitting on a character count?
+    Paragraphs shorter than MIN_BODY get joined with the next one, so I don't
+    end up with a chunk that is only "The bad: the elevator is out roughly one
+    week per semester."
     """
-    return fallback_split(documents)
+    chunks: list[Chunk] = []
+
+    for doc in documents:
+        paragraphs = [p.strip() for p in doc.text.split("\n\n") if p.strip()]
+        if not paragraphs:
+            continue
+
+        title = paragraphs[0]
+        bodies = paragraphs[1:]
+
+        # A document with no body paragraphs is just its title — keep it whole.
+        if not bodies:
+            bodies = [title]
+
+        grouped: list[str] = []
+        current = ""
+        for paragraph in bodies:
+            current = f"{current}\n\n{paragraph}" if current else paragraph
+            if len(current) >= MIN_BODY:
+                grouped.append(current)
+                current = ""
+
+        # Whatever is left over is too short to stand alone, so it joins the
+        # chunk before it rather than becoming a fragment.
+        if current:
+            if grouped:
+                grouped[-1] = f"{grouped[-1]}\n\n{current}"
+            else:
+                grouped.append(current)
+
+        for index, body in enumerate(grouped):
+            text = body if body == title else f"{title}\n\n{body}"
+            chunks.append(
+                Chunk(
+                    text=text,
+                    source=doc.source,
+                    index=index,
+                    produced_by="chunker.py::split_documents",
+                )
+            )
+
+    return chunks
 
 
 def describe(chunks: list[Chunk]) -> str:
